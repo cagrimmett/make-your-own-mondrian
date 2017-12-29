@@ -5,6 +5,9 @@
 - Adjust the size with a slider
 - Click to add colors!
 
+`index.html` is the "make your own" version.
+`random_version.html` is the version that randomly generates the colors for you.
+
 ## To Do List
 - [x] Proof of concept
 - [ ] Better styling
