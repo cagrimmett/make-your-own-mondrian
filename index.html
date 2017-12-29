@@ -1,0 +1,168 @@
+<html>
+<head>
+	<!-- Implemented by Chuck Grimmett http://cagrimmett.com -->
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+	<title>Make Your Own Mondrian</title>
+<style>
+
+body {
+  margin: 0;
+  padding:0;
+  position: relative;
+  background: #000;
+}
+
+#controls {
+	position: absolute;
+	top:0;
+	left: 0;
+	width: 100%;
+	height: 85px;
+	background: #fff;
+	text-align: center;
+}
+#controls .title {
+	font-size: 28px;
+	padding-top: 15px;
+	font-weight: 600;
+	margin-bottom: 5px;
+}
+
+#controls .inputs form {
+	font-size: 20px;
+	line-height: 20px;
+}
+
+#controls .inputs input:first-of-type {
+	margin-right: 30px;
+}
+
+.node {
+  box-sizing: border-box;
+  position: absolute;
+  overflow: hidden;
+}
+
+.node-value {
+  color: rgba(0,0,0,0.8);
+  font-size: 9px;
+  margin-top: 1px;
+}
+
+</style>
+</head>
+<body>
+<div id="controls">
+	<div id="info"
+	<div class="title">Make Your Own Mondrian</div>
+	<div class="inputs">
+		<form>
+			Number of rectangles: <output name="rectOutput" id="rectOutputId">20</output> <input type="range" name="rectInput" id="rectInputId" value="20" min="5" max="100" oninput="rectOutputId.value = rectInputId.value"> Click to add color!
+		</form>
+	</div>
+</div>
+
+
+
+<script>
+
+var rectNumber = document.getElementById("rectInputId");
+
+function sol614() {
+
+	var width = window.innerWidth,
+	    height = window.innerHeight - 85;
+	var format = d3.format(",d");
+
+	function getRandomArbitrary(min, max) {
+		  return Math.random() * (max - min) + min;
+	}
+
+	function treeData() {
+	  var obj = {name: "flare"};
+	  var children = [];
+		var click = 0;
+	  for (var row = 0; row < rectNumber.value; row++) {
+	    children.push({id: row, value: getRandomArbitrary(60, 1000), click: click})
+	  }
+	  obj['children'] = children;
+	  return obj;
+	}
+
+
+	var tree = treeData();
+	console.log(tree);
+
+
+	var treemap = d3.treemap()
+	    .size([width, height])
+	    .padding(13)
+	    .round(true)
+		.tile(d3.treemapBinary);    ;
+
+	var tree = d3.hierarchy(tree);
+
+	tree.sum(function(d) { return d.value; });
+	console.log(tree);
+
+	treemap(tree);
+
+	d3.select("body")
+	.selectAll(".node")
+	.data(tree.leaves())
+	.enter().append("div")
+	  .attr("class", "node")
+	  .attr("title", function(d) { return d.data.id; })
+	  .style("left", function(d) { return d.x0 + "px"; })
+	  .style("top", function(d) { return d.y0+85 + "px"; })
+	  .style("width", function(d) { return d.x1 - d.x0 + "px"; })
+	  .style("height", function(d) { return d.y1 - d.y0 + "px"; })
+		.style("background", "#fff")
+		.on('click', function(d) {
+	       d.data.click ++;
+	       if ((d.data.click)%4 == 0 ) { d3.select(this).style("background","#fff"); }
+		   if ((d.data.click)%4 == 1 ) { d3.select(this).style("background","#CA0819"); }
+		   if ((d.data.click)%4 == 2 ) { d3.select(this).style("background","#0F68B7"); }
+		   if ((d.data.click)%4 == 3 ) { d3.select(this).style("background","#F8D438"); }
+		 });
+}
+
+//Run on first load
+sol614();
+
+$(window).resize(function() {
+    if(this.resizeTO) clearTimeout(this.resizeTO);
+    this.resizeTO = setTimeout(function() {
+        $(this).trigger('resizeEnd');
+    }, 500);
+});
+
+//resize on resizeEnd function
+$(window).bind('resizeEnd', function() {
+	 d3.selectAll("div.node").remove();
+	 sol614();
+});
+
+$( "#paddingInputId" ).on("change input", function() {
+  	d3.selectAll("div.node").remove();
+	sol614();
+});
+
+$( "#rectInputId" ).on("change input", function() {
+  	d3.selectAll("div.node").remove();
+	sol614();
+});
+
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-655664-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
